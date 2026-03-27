@@ -1,18 +1,22 @@
 from models.travel_request import TravelRequest
-from services.llm_service import generate_itinerary
+from agents.supervisor_agent import supervisor_agent
 
 def plan_trip_service(request: TravelRequest):
+    try:
+        response = supervisor_agent(request)
 
-    itinerary = generate_itinerary(
-        request.destination,
-        request.days,
-        request.interests
-    )
+        return {
+            "destination": response["destination"],
+            "days": response["days"],
+            "itinerary": response["itinerary"],
+            "restaurants": response["restaurants"],
+            "stays": response["stays"],
+            "transport": response["transport"],
+            "status": "success"
+        }
 
-    return {
-        "destination": request.destination,
-        "days": request.days,
-        "budget": request.budget,
-        "itinerary": itinerary,
-        "status": "success"
-    }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }

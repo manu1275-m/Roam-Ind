@@ -1,10 +1,9 @@
+from pydantic import BaseModel
 from typing import List
 
-from pydantic import BaseModel
-
-
 class TravelRequest(BaseModel):
-	destination: str
-	days: int
-	budget: int
-	interests: List[str]
+    destination: str
+    days: int
+    budget: int
+    interests: List[str]
+    travel_type: str = "solo"   # ✅ ADD THIS

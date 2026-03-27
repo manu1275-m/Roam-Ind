@@ -12,6 +12,8 @@ def _fallback_itinerary(destination, days, interests):
 
 def generate_itinerary(destination, days, interests):
     api_key = os.getenv("OPENAI_API_KEY")
+
+    # fallback if no API key
     if not api_key:
         return _fallback_itinerary(destination, days, interests)
 
@@ -19,13 +21,29 @@ def generate_itinerary(destination, days, interests):
 
     prompt = f"""
     Create a detailed {days}-day travel itinerary for {destination}, India.
-    Interests: {', '.join(interests)}.
 
-    Include:
-    - day-wise plan
-    - famous places
-    - food recommendations
-    - realistic travel flow
+    Interests: {', '.join(interests)}
+
+    STRICT RULES:
+    - Each day must be UNIQUE (no repetition)
+    - Include DIFFERENT places each day
+    - Do NOT repeat same words like "Explore"
+    - Include REAL famous places in {destination}
+    - Mix activities:
+        * sightseeing
+        * food experiences
+        * adventure or relaxation
+    - Make it realistic and practical
+
+    FORMAT:
+    Day 1:
+    - Place name + short activity
+
+    Day 2:
+    - Different places + different activities
+
+    Day 3:
+    - New experiences only
     """
 
     try:
@@ -35,7 +53,8 @@ def generate_itinerary(destination, days, interests):
                 {"role": "user", "content": prompt}
             ]
         )
+
+        return response.choices[0].message.content
+
     except Exception:
         return _fallback_itinerary(destination, days, interests)
-
-    return response.choices[0].message.content
